@@ -5,14 +5,38 @@ class RecipeForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: "",
-      ingredients: "",
-      instruction: ""
+      recipe: {
+        name: "",
+        ingredients: "",
+        instruction: ""
+      }
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.stripHtmlEntities = this.stripHtmlEntities.bind(this);
+  }
+
+  componentDidMount() {
+    const {
+      match: {
+        params: { id }
+      }
+    } = this.props;
+
+    if (id) {
+      console.log("edit")
+      const url = `/api/v1/show/${id}`;
+      fetch(url)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Network response not ok.");
+      })
+      .then(response => this.setState({ recipe: response }))
+      .catch(() => this.props.history.push("/recipes"));
+    }
   }
 
   // strip html entities to prevent storage of raw html in the db
@@ -23,21 +47,21 @@ class RecipeForm extends React.Component {
   }
 
   onChange(event) {
-    this.setState({ [event.target.name]: event.target.value });
+    this.setState({ recipe: { ...this.state.recipe, [event.target.name]: event.target.value } });
   }
 
   onSubmit(event) {
     event.preventDefault();
     const  { url, method }  = this.props;
-    const { name, ingredients, instruction } = this.state;
+    const { recipe } = this.state;
 
-    if (name.length == 0 || ingredients.length == 0 || instruction.length == 0)
+    if (recipe.name.length == 0 || recipe.ingredients.length == 0 || recipe.instruction.length == 0)
       return;
 
     const body = {
-      name,
-      ingredients,
-      instruction: this.stripHtmlEntities(instruction.replace(/\n/g, "<br>"))
+      name: recipe.name,
+      ingredients: recipe.ingredients,
+      instruction: this.stripHtmlEntities(recipe.instruction.replace(/\n/g, "<br>"))
     };
 
     const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -60,6 +84,7 @@ class RecipeForm extends React.Component {
   }
 
   render() {
+    const { recipe } = this.state;
     return (
       <div className="container mt-5">
         <div className="row">
@@ -77,6 +102,7 @@ class RecipeForm extends React.Component {
                   className="form-control"
                   required
                   onChange={this.onChange}
+                  value={recipe.name}
                 />
               </div>
               <div className="form-group">
@@ -88,6 +114,7 @@ class RecipeForm extends React.Component {
                   className="form-control"
                   required
                   onChange={this.onChange}
+                  value={this.state.recipe.ingredients}
                 />
                 <small id="ingredientsHelp" className="form-text text-muted">
                   Separate each ingredient with a comma.
@@ -101,6 +128,7 @@ class RecipeForm extends React.Component {
                 rows="5"
                 required
                 onChange={this.onChange}
+                value={recipe.instruction}
               />
               <button type="submit" className="btn custom-button mt-3">
                 Create Recipe

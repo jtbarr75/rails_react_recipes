@@ -10,7 +10,7 @@ class EditRecipe extends React.Component {
       }
     } = this.props;
     return (
-      <RecipeForm method="PATCH" url={`/api/v1/update/${id}`} />
+      <RecipeForm method="PATCH" url={`/api/v1/update/${id}`} headline="Let's make this recipe even better."/>
     )
   }
 }

@@ -13,6 +13,14 @@ class Api::V1::RecipesController < ApplicationController
     end
   end
 
+  def update
+    if recipe.update_attributes(recipe_params)
+      render json: recipe
+    else 
+      render json: recipe.errors
+    end
+  end
+
   def show
     if recipe
       render json: recipe

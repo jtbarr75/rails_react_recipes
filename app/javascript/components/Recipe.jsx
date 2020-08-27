@@ -110,6 +110,9 @@ class Recipe extends React.Component {
               />
             </div>
             <div className="col-sm-12 col-lg-2">
+              <Link to={`/recipe/${recipe.id}/edit`} className="btn btn-primary">
+                Edit Recipe
+              </Link>
               <button type="button" className="btn btn-danger" onClick={this.deleteRecipe}>
                 Delete Recipe
               </button>

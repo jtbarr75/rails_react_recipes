@@ -25,7 +25,6 @@ class RecipeForm extends React.Component {
     } = this.props;
 
     if (id) {
-      console.log("edit")
       const url = `/api/v1/show/${id}`;
       fetch(url)
       .then(response => {
@@ -65,6 +64,7 @@ class RecipeForm extends React.Component {
     };
 
     const token = document.querySelector('meta[name="csrf-token"]').content;
+    console.log(url);
     fetch(url, {
       method: method,
       headers: {
